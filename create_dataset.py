@@ -3,11 +3,12 @@ import mediapipe as mp
 import numpy as np
 import time, os
 
-actions = ['moving_fingers', 'shaking_hands']
+actions = ['rock_paper', 'shaking_hands', 'moving_fingers', 'opp_rock_paper', 'clap', 'finger_clap', 'rock_clap', 'count_number']
 seq_length = 30  #윈도우 사이즈
 secs_for_action = 30  #액션 녹화 시간
 
-mp_hands = mp.solutions.hands
+#mediapipe 초기화
+mp_hands = mp.solutions.hands  
 mp_drawing = mp. solutions .drawing_utils
 hands = mp_hands.Hands(
     max_num_hands = 2,
@@ -18,23 +19,23 @@ hands = mp_hands.Hands(
 cap = cv2. VideoCapture(0)
 
 created_time = int(time.time())
-os.makedirs('dataset', exist_ok=True)
+os.makedirs('dataset', exist_ok=True)  #데이터셋 저장할 폴더
 
 while cap.isOpened():
     for idx, action in enumerate(actions):
         data = []
 
-        ret, img = cap. read()
+        ret, img = cap.read()
         img = cv2. flip(img, 1)
     
         cv2.putText(img, f'Waiting for collecting {action.upper()} action...', org=(10, 30), 
-                    fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2) 
+                    fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(255, 255, 255), thickness=2)  #액션 이름 안내
         cv2. imshow('img', img) 
-        cv2.waitKey (3000)
+        cv2.waitKey(3000)  #어떤 액션할지 준비
 
         start_time = time.time()
 
-        while time.time() - start_time < secs_for_action: 
+        while time.time() - start_time < secs_for_action:  #30초동안 반복
             ret, img = cap. read ()
 
             img = cv2.flip(img, 1)
@@ -46,7 +47,7 @@ while cap.isOpened():
                 for res in result.multi_hand_landmarks:
                     joint = np.zeros((21, 4))
                     for j, lm in enumerate(res.landmark):
-                        joint[j] = [lm.x, lm.y, lm.z, lm.visibility]
+                        joint[j] = [lm.x, lm.y, lm.z, lm.visibility]  #visibility를 추가해 landmark가 이미지 상에서 보이는지 안보이는지 판단
 
                     # Compute angles between joints 
                     # 손가락 사이의 관절
@@ -64,7 +65,7 @@ while cap.isOpened():
                     angle = np.degrees(angle) # Convert radian to degree
 
                     angle_label = np.array([angle], dtype=np.float32)
-                    angle_label = np.append(angle_label, idx)
+                    angle_label = np.append(angle_label, idx)  #idx는 액션의 인덱스
 
                     d = np.concatenate([joint.flatten(), angle_label])
 
@@ -78,7 +79,7 @@ while cap.isOpened():
 
         data = np.array(data)
         print(action, data.shape)
-        np.save(os.path.join('dataset', f'raw_{action}_{created_time}'), data)
+        np.save(os.path.join('dataset', f'raw_{action}_{created_time}'), data)  #npy 형태의 데이터로 저장
 
         # Create sequence data
         full_seq_data = []

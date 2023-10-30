@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 from tensorflow.keras.models import load_model
 
-actions = ['moving_fingers', 'shaking_hands']
+actions = ['rock_paper', 'shaking_hands', 'moving_fingers', 'opp_rock_paper', 'clap', 'finger_clap', 'rock_clap', 'count_number']
 seq_length = 30
 
 model = load_model('models/model.h5')
