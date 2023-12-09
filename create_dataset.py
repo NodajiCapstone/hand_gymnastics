@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 import time, os
 
-actions = ['rock_paper', 'shaking_hands', 'moving_fingers', 'opp_rock_paper', 'clap', 'finger_clap', 'rock_clap', 'count_number']
+actions = ['rock_paper', 'shaking_hands', 'moving_fingers', 'opp_rock_paper', 'finger_clap', 'rock_clap', 'count_number']
 seq_length = 30  #윈도우 사이즈
 secs_for_action = 30  #액션 녹화 시간
 
